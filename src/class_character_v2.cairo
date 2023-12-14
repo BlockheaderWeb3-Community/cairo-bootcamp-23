@@ -55,7 +55,6 @@ mod ClassCharacterV2 {
         let owner = self.owner.read();
         let caller = get_caller_address();
         assert(owner == caller, 'caller not owner');
-        // https://github.com/OpenZeppelin/cairo-contracts/blob/main/src/token/erc20/erc20.cairo
         assert(_name != '', 'name cannot be empty');
         assert(_age != 0, 'age cannot be zero');
         let student_instance = Student {
@@ -65,7 +64,6 @@ mod ClassCharacterV2 {
             has_reward: _has_reward,
             xp_earnings: _xp_earnings
         };
-
         self.students.write(student_account, student_instance);
         self.emit(StudentAdded { student: student_account });
     }
@@ -79,17 +77,16 @@ mod ClassCharacterV2 {
         true
     }
 
-
     #[external(v0)]
     fn get_owner(self: @ContractState) -> ContractAddress {
         self.owner.read()
     }
 
-
+    // without specifying the external attribute, this function cannot be access outside this contract
     fn internal_get_owner(self: @ContractState) -> ContractAddress {
         self.owner.read()
     }
-    
+
     #[external(v0)]
     fn get_student(self: @ContractState, student_account: ContractAddress) -> Student {
         self.students.read(student_account)
