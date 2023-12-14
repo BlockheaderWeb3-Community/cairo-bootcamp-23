@@ -1,0 +1,18 @@
+[package]
+name = "class_character"
+version = "0.1.0"
+edition = "2023_10"
+
+# See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
+
+[dependencies]
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.12.0" }
+starknet = "2.4.0"
+
+[[target.starknet-contract]]
+sierra = true
+casm = true
+[tool.sncast.cohort_test_deploy]
+account = "cohort_test_deploy"
+accounts-file = "your_accounts_file_goes_here" # add the path to account file path (the json file)
+url = "your_rpc_url"
