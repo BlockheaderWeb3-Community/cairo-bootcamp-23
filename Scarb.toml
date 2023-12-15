@@ -1,5 +1,5 @@
 [package]
-name = "class_character"
+name = "class_character_v2"
 version = "0.1.0"
 edition = "2023_10"
 
@@ -12,7 +12,9 @@ starknet = "2.4.0"
 [[target.starknet-contract]]
 sierra = true
 casm = true
-[tool.sncast.cohort_test_deploy]
-account = "cohort_test_deploy"
-accounts-file = "your_accounts_file_goes_here" # add the path to account file path (the json file)
-url = "your_rpc_url"
+
+[tool.sncast.test_1]
+account = "test_1"
+accounts-file = "/Users/mac/.starknet_accounts/starknet_open_zeppelin_accounts.json"
+url = "https://starknet-goerli.infura.io/v3/14d4909928f148238ba1da4db2886e77"
+

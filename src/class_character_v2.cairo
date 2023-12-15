@@ -1,5 +1,6 @@
 #[starknet::contract]
 mod ClassCharacterV2 {
+    use core::zeroable::Zeroable;
     use core::starknet::event::EventEmitter;
     use starknet::{ContractAddress, get_caller_address};
 
@@ -54,9 +55,13 @@ mod ClassCharacterV2 {
     ) {
         let owner = self.owner.read();
         let caller = get_caller_address();
+
         assert(owner == caller, 'caller not owner');
+
+        assert(!student_account.is_zero(), 'is zero address');
         assert(_name != '', 'name cannot be empty');
         assert(_age != 0, 'age cannot be zero');
+        assert(student_account != owner, 'not owner');
         let student_instance = Student {
             name: _name,
             age: _age,
