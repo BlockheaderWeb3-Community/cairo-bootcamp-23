@@ -24,6 +24,12 @@ mod OwnerContract {
         self.owner.read()
     }
 
+    fn assert_only_owner(self: @ContractState) {
+            let owner: ContractAddress = self.owner.read();
+            let caller = get_caller_address();
+            assert(caller == owner, 'Caller is not the owner');
+        }
+
         
     }
 
