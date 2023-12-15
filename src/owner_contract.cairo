@@ -18,6 +18,14 @@ mod OwnerContract {
         fn set_owner(ref self: ContractState, new_owner: ContractAddress) {
             self.owner.write(new_owner);
         }
+
+        fn set_owner_with_access (ref self: ContractState, new_owner: ContractAddress) {
+            let caller = get_caller_address();
+            let owner = self.owner.read();
+            assert(caller == owner, 'caller is not the owner');
+            self.owner.write(new_owner);
+        }
+
         fn get_owner(self: @ContractState) -> ContractAddress {
             self.owner.read()
         }
