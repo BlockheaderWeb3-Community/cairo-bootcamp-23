@@ -1,7 +1,7 @@
 #[starknet::contract]
 mod ClassCharacterV2 {
     use core::zeroable::Zeroable;
-use core::starknet::event::EventEmitter;
+    use core::starknet::event::EventEmitter;
     use starknet::{ContractAddress, get_caller_address};
 
     // event 
