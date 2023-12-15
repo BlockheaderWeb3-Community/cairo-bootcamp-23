@@ -2,7 +2,7 @@
 version = 1
 
 [[package]]
-name = "class_character"
+name = "class_character_v2"
 version = "0.1.0"
 dependencies = [
  "snforge_std",
