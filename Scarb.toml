@@ -7,12 +7,13 @@ edition = "2023_10"
 
 [dependencies]
 snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.12.0" }
-starknet = "2.4.0"
+starknet = "2.3.1"
 
 [[target.starknet-contract]]
 sierra = true
 casm = true
-[tool.sncast.cohort_test_deploy]
-account = "cohort_test_deploy"
-accounts-file = "your_accounts_file_goes_here" # add the path to account file path (the json file)
-url = "your_rpc_url"
+
+[tool.sncast.starknetTest]
+account = "starknetTest"
+accounts-file = "/Users/user/.starknet_accounts/starknet_open_zeppelin_accounts.json"
+url = "https://starknet-goerli.infura.io/v3/c61b0457e5004368ac942e464b8d1f62"
