@@ -19,12 +19,12 @@ trait IERC20<TContractState> {
 }
 
 #[starknet::contract]
-mod ERC20 {
+mod BWCERC20Token {
     // importing necessary libraries
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use starknet::contract_address_const; //similar to address(0) in Solidity
-    use zeroable::Zeroable;
+    use core::zeroable::Zeroable;
     use super::IERC20;
 
     //Stroge Variables
@@ -130,6 +130,8 @@ mod ERC20 {
             amount: u256
         ) {
             let caller = get_caller_address();
+            let my_allowance = self.allowances.read((sender, recipient));
+            assert(my_allowance <= amount, 'Amount Not Allowed');
             self
                 .spend_allowance(
                     sender, caller, amount
@@ -171,11 +173,14 @@ mod ERC20 {
             recipient: ContractAddress,
             amount: u256
         ) {
+            let sender_balance = self.balance_of(sender);
+
             assert(!sender.is_zero(), 'transfer from 0');
             assert(!recipient.is_zero(), 'transfer to 0');
-
+            assert(sender_balance >= amount, 'Insufficient fund');
             self.balances.write(sender, self.balances.read(sender) - amount);
             self.balances.write(recipient, self.balances.read(recipient) + amount);
+            true;
 
             self.emit(Transfer { from: sender, to: recipient, value: amount, });
         }
