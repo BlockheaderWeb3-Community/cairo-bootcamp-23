@@ -88,7 +88,7 @@ mod BWCERC20Token {
         self.balances.write(_to, recievers_balance + _amount);
 
         // emmit success event
-        self.emit(Transfer { sender: caller, reciever: _to, value: _amount});
+        self.emit(Transfer { sender: caller, reciever: _to, value: _amount });
     }
 
     //  fn transfer from 
@@ -110,7 +110,7 @@ mod BWCERC20Token {
         self.balances.write(from, sender_balance - amount);
         self.balances.write(to, recievers_balance + amount);
 
-         // emmit success event
-        self.emit(Transfer { sender: from, reciever: to, value: amount});
+        // emmit success event
+        self.emit(Transfer { sender: from, reciever: to, value: amount });
     }
 }
