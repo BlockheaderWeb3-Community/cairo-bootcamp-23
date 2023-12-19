@@ -1,6 +1,5 @@
 use starknet::{ContractAddress};
 #[starknet::interface]
-
 //  traits automatically generate dispatchers which can be used to call other contracts
 trait ICounter<T> {
     fn set_count(ref self: T, amount: u256) -> bool;
@@ -15,7 +14,9 @@ mod Errors {
 
 #[starknet::contract]
 mod Counter {
-    use class_character::ownable::{ IOwnableDispatcher, IOwnableDispatcherTrait }; // we have access to IOwnableDispatcher from Ownable contract
+    use class_character::ownable::{
+        IOwnableDispatcher, IOwnableDispatcherTrait
+    }; // we have access to IOwnableDispatcher from Ownable contract
     use core::Zeroable;
     use super::{Errors, ICounter};
     use starknet::{ContractAddress, get_caller_address};
@@ -45,14 +46,19 @@ mod Counter {
     #[external(v0)]
     #[generate_trait]
     impl TestOwnableImpl of TestOwnableTrait {
-        fn set_ownable_owner(ref self: ContractState, addr: ContractAddress) -> bool {
+        fn set_ownable_owner(
+            ref self: ContractState, addr: ContractAddress, new_owner: ContractAddress
+        ) -> bool {
             assert(!addr.is_zero(), Errors::ZERO_ADDR);
-            IOwnableDispatcher { contract_address: addr }.set_owner(addr); // we can call the set_owner function of the Ownable contract
+            // we can invoke the set_owner function of the Ownable contract and add a new owner with the new_owner arg
+            IOwnableDispatcher { contract_address: addr }.set_owner(new_owner);
             true
         }
 
         fn get_ownable_owner(self: @ContractState, addr: ContractAddress) -> ContractAddress {
-            IOwnableDispatcher { contract_address: addr }.get_owner() // we can call the get_owner function of the Ownable contract
+            // we can call the get_owner function of the Ownable contract
+            IOwnableDispatcher { contract_address: addr }
+                .get_owner() 
         }
     }
 }
