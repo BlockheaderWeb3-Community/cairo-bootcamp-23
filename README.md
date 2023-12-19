@@ -2,13 +2,14 @@
 1. Install starknet-foundry by running this command:
 `curl -L https://raw.githubusercontent.com/foundry-rs/starknet-foundry/master/scripts/install.sh | sh`
 restart your terminal
-run `foundryup`
+run `snfoundryup`
 
 2. Create an account on any of these RPC provides:
     - [Voyager](https://voyager.online/)
     - [BlastAPI](https://starknet-testnet.blastapi.io)
     - [Infura](https://www.infura.io/)
-    Generate an RPC apikey to interact with the network
+
+Generate an RPC apikey to interact with the network
 
 3. Create a contract account by running this command on your terminal:
 `sncast -u <rpc-url> account create -n <name> --add-profile`
