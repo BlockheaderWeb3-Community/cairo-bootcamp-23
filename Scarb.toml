@@ -17,3 +17,8 @@ casm = true
 account = "starknetTest"
 accounts-file = "/Users/user/.starknet_accounts/starknet_open_zeppelin_accounts.json"
 url = "https://starknet-goerli.infura.io/v3/c61b0457e5004368ac942e464b8d1f62"
+
+[[tool.snforge.fork]]
+name = "SepoliaFork"
+url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_6"
+block_id.tag = "Latest"

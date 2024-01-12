@@ -224,11 +224,11 @@ mod test {
     use super::{IERC20, BWCERC20Token, IERC20Dispatcher, IERC20DispatcherTrait};
     use starknet::ContractAddress;
     use starknet::contract_address::contract_address_const;
-    use array::ArrayTrait;
+    use core::array::ArrayTrait;
     use snforge_std::{declare, ContractClassTrait, fs::{FileTrait, read_txt}};
     use snforge_std::{start_prank, stop_prank, CheatTarget};
     use snforge_std::PrintTrait;
-    use traits::{Into, TryInto};
+    use core::traits::{Into, TryInto};
 
     // helper function
     fn deploy_contract() -> ContractAddress {
@@ -292,14 +292,15 @@ mod test {
     }
 
     #[test]
-    fn test_allowance() {
+    #[fuzzer(runs: 22, seed: 38)]
+    fn test_allowance(amount: u256) {
         let contract_address = deploy_contract();
         let dispatcher = IERC20Dispatcher { contract_address };
 
         start_prank(CheatTarget::One(contract_address), Account::admin());
-        dispatcher.approve(contract_address, 10);
+        dispatcher.approve(contract_address, amount);
         assert(
-            dispatcher.allowance(Account::admin(), contract_address) == 10, Errors::INVALID_BALANCE
+            dispatcher.allowance(Account::admin(), contract_address) == amount, Errors::INVALID_BALANCE
         );
         stop_prank(CheatTarget::One(contract_address));
     }
@@ -367,7 +368,7 @@ mod test {
     mod Account {
         use core::option::OptionTrait;
         use starknet::ContractAddress;
-        use traits::TryInto;
+        use core::traits::TryInto;
 
         fn user1() -> ContractAddress {
             'joy'.try_into().unwrap()
