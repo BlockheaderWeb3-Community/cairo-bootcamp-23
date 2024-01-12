@@ -136,7 +136,7 @@ mod BWCERC20Token {
             assert(my_allowance > 0, 'You have no token approved');
             assert(amount <= my_allowance, 'Amount Not Allowed');
             // assert(my_allowance <= amount, 'Amount Not Allowed');
-            
+
             self
                 .spend_allowance(
                     sender, caller, amount
@@ -405,10 +405,10 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected: ('Amount Not Allowed', ))]
+    #[should_panic(expected: ('Amount Not Allowed',))]
     fn test_transfer_from_should_fail() {
         let contract_address = deploy_contract();
-        let dispatcher = IERC20Dispatcher {contract_address};
+        let dispatcher = IERC20Dispatcher { contract_address };
         start_prank(CheatTarget::One(contract_address), Account::admin());
         dispatcher.approve(Account::user1(), 20);
         stop_prank(CheatTarget::One(contract_address));
@@ -418,7 +418,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected: ('You have no token approved', ))]
+    #[should_panic(expected: ('You have no token approved',))]
     fn test_transfer_from_failed_when_not_approved() {
         let contract_address = deploy_contract();
         let dispatcher = IERC20Dispatcher { contract_address };
@@ -489,6 +489,7 @@ mod test {
         const FUNDS_NOT_RECIEVED: felt252 = 'Funds not recieved!';
         const ERROR_INCREASING_ALLOWANCE: felt252 = 'Allowance not increased';
         const ERROR_DECREASING_ALLOWANCE: felt252 = 'Allowance not decreased';
+    }
     mod Account {
         use core::option::OptionTrait;
         use starknet::ContractAddress;
