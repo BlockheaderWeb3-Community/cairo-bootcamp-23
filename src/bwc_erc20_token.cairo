@@ -132,8 +132,11 @@ mod BWCERC20Token {
         ) {
             let caller = get_caller_address();
             let my_allowance = self.allowances.read((sender, caller));
-            assert(my_allowance > 0, 'Not approved to spend!');
+
+            assert(my_allowance > 0, 'You have no token approved');
             assert(amount <= my_allowance, 'Amount Not Allowed');
+            // assert(my_allowance <= amount, 'Amount Not Allowed');
+            
             self
                 .spend_allowance(
                     sender, caller, amount
@@ -383,31 +386,43 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected: ('Not approved to spend!',))]
-    fn test_not_approved_to_spend_error() {
+    fn test_transfer_from() {
         let contract_address = deploy_contract();
         let dispatcher = IERC20Dispatcher { contract_address };
+        let user1 = Account::user1();
+        start_prank(CheatTarget::One(contract_address), Account::admin());
+        dispatcher.approve(user1, 10);
+        assert(dispatcher.allowance(Account::admin(), user1) == 10, Errors::NOT_ALLOWED);
+        stop_prank(CheatTarget::One(contract_address));
+
+        start_prank(CheatTarget::One(contract_address), user1);
+        dispatcher.transfer_from(Account::admin(), Account::user2(), 5);
+        assert(dispatcher.balance_of(Account::user2()) == 5, Errors::INVALID_BALANCE);
+        // dispatcher.transfer_from(Account::admin(), user1, 15);
+        // assert(dispatcher.balance_of(user1) == 5, Errors::INVALID_BALANCE);
+        stop_prank(CheatTarget::One(contract_address));
+    }
+
+    #[test]
+    #[should_panic(expected: ('Amount Not Allowed', ))]
+    fn test_transfer_from_should_fail() {
+        let contract_address = deploy_contract();
+        let dispatcher = IERC20Dispatcher {contract_address};
+        start_prank(CheatTarget::One(contract_address), Account::admin());
+        dispatcher.approve(Account::user1(), 20);
+        stop_prank(CheatTarget::One(contract_address));
+
         start_prank(CheatTarget::One(contract_address), Account::user1());
         dispatcher.transfer_from(Account::admin(), Account::user2(), 40);
     }
 
     #[test]
-    #[should_panic(expected: ('Amount Not Allowed',))]
-    fn test_should_panic_when_amount_transferred_not_allowed() {
+    #[should_panic(expected: ('You have no token approved', ))]
+    fn test_transfer_from_failed_when_not_approved() {
         let contract_address = deploy_contract();
         let dispatcher = IERC20Dispatcher { contract_address };
-
-        start_prank(CheatTarget::One(contract_address), Account::admin());
-        dispatcher.approve(Account::user1(), 20);
-        stop_prank(CheatTarget::One(contract_address));
-
-        assert(
-            dispatcher.allowance(Account::admin(), Account::user1()) == 20,
-            Errors::INVALID_ALLOWANCE_GIVEN
-        );
-
         start_prank(CheatTarget::One(contract_address), Account::user1());
-        dispatcher.transfer_from(Account::admin(), Account::user2(), 80);
+        dispatcher.transfer_from(Account::admin(), Account::user2(), 5);
     }
 
     #[test]
