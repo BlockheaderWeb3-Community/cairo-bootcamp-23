@@ -4,6 +4,7 @@ trait IERC20<TContractState> {
     fn get_name(self: @TContractState) -> felt252;
     fn get_symbol(self: @TContractState) -> felt252;
     fn get_decimals(self: @TContractState) -> u8;
+    //fn totalSupply(ref self: TContractState, to: ContractAddress, amount: u256);
     fn get_total_supply(self: @TContractState) -> u256;
     fn balance_of(self: @TContractState, account: ContractAddress) -> u256;
     fn allowance(self: @TContractState, owner: ContractAddress, spender: ContractAddress) -> u256;
@@ -16,6 +17,10 @@ trait IERC20<TContractState> {
     fn decrease_allowance(
         ref self: TContractState, spender: ContractAddress, subtracted_value: u256
     );
+
+    fn mint(ref self: TContractState, recipient: ContractAddress, amount: u256) -> bool;
+
+    fn burn(ref self: TContractState, to: ContractAddress, amount: u256) -> bool;
 }
 
 #[starknet::contract]
@@ -31,6 +36,7 @@ mod BWCERC20Token {
     #[storage]
     struct Storage {
         name: felt252,
+        owner: ContractAddress,
         symbol: felt252,
         decimals: u8,
         total_supply: u256,
@@ -67,6 +73,7 @@ mod BWCERC20Token {
     #[constructor]
     fn constructor(
         ref self: ContractState,
+        _owner: ContractAddress,
         _name: felt252,
         _symbol: felt252,
         _decimal: u8,
@@ -75,6 +82,8 @@ mod BWCERC20Token {
     ) {
         // The .is_zero() method here is used to determine whether the address type recipient is a 0 address, similar to recipient == address(0) in Solidity.
         assert(!recipient.is_zero(), 'transfer to zero address');
+        assert(!_owner.is_zero(), 'owner cant be zero addr');
+        self.owner.write(_owner);
         self.name.write(_name);
         self.symbol.write(_symbol);
         self.decimals.write(_decimal);
@@ -89,6 +98,7 @@ mod BWCERC20Token {
                 }
             );
     }
+
 
     #[external(v0)]
     impl IERC20Impl of IERC20<ContractState> {
@@ -116,6 +126,21 @@ mod BWCERC20Token {
             self: @ContractState, owner: ContractAddress, spender: ContractAddress
         ) -> u256 {
             self.allowances.read((owner, spender))
+        }
+
+
+        fn mint(ref self: ContractState, recipient: ContractAddress, amount: u256) -> bool {
+            let owner = self.owner.read();
+            let caller = get_caller_address();
+            assert(owner == caller, 'caller not owner');
+            assert(!recipient.is_zero(), 'ERC20: Adddress zero');
+            assert(self.balances.read(recipient) >= amount, 'Insufficient fund');
+            self.balances.write(recipient, self.balances.read(recipient) + amount);
+            self.total_supply.write(self.total_supply.read() - amount);
+            // call tranfer 
+            // Transfer(Zeroable::zero(), recipient, amount);
+
+            true
         }
 
         fn transfer(ref self: ContractState, recipient: ContractAddress, amount: u256) {
@@ -162,6 +187,22 @@ mod BWCERC20Token {
                 .approve_helper(
                     caller, spender, self.allowances.read((caller, spender)) - subtracted_value
                 );
+        }
+
+        fn burn(ref self: ContractState, to: ContractAddress, amount: u256) -> bool {
+            let owner = self.owner.read();
+            let msg_sender = get_caller_address();
+            assert(owner == msg_sender, 'msg_sender not owner');
+
+            assert(self.balances.read(to) >= amount, 'Insufficient fund');
+
+            self.balances.write(msg_sender, self.balances.read(msg_sender) - amount);
+
+            // call transfer
+
+            // Transfer(Zeroable::zero(), to, amount);
+
+            true
         }
     }
 
