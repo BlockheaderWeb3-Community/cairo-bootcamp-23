@@ -255,7 +255,7 @@ mod test {
     // Generate an address
     mod Account {
         use starknet::ContractAddress;
-        use traits::TryInto;
+        use core::traits::TryInto;
 
         fn user1() -> ContractAddress {
             'joy'.try_into().unwrap()
@@ -331,7 +331,7 @@ mod test {
 
         let currentAllowance = dispatcher.allowance(Account::admin(), contract_address);
 
-        assert(currentAllowance == 20, Errors::INVALID_ALLOWANCE_GIVEN);
+        assert(currentAllowance == 20, Errors::NOT_ALLOWED);
         stop_prank(CheatTarget::One(contract_address));
     }
 
@@ -375,7 +375,7 @@ mod test {
 
         assert(
             dispatcher.allowance(Account::admin(), Account::user1()) == 20,
-            Errors::INVALID_ALLOWANCE_GIVEN
+            Errors::NOT_ALLOWED
         );
 
         start_prank(CheatTarget::One(contract_address), Account::user1());
@@ -383,24 +383,6 @@ mod test {
         assert(
             dispatcher.allowance(Account::admin(), Account::user1()) == 10, Errors::FUNDS_NOT_SENT
         );
-        stop_prank(CheatTarget::One(contract_address));
-    }
-
-    #[test]
-    fn test_transfer_from() {
-        let contract_address = deploy_contract();
-        let dispatcher = IERC20Dispatcher { contract_address };
-        let user1 = Account::user1();
-        start_prank(CheatTarget::One(contract_address), Account::admin());
-        dispatcher.approve(user1, 10);
-        assert(dispatcher.allowance(Account::admin(), user1) == 10, Errors::NOT_ALLOWED);
-        stop_prank(CheatTarget::One(contract_address));
-
-        start_prank(CheatTarget::One(contract_address), user1);
-        dispatcher.transfer_from(Account::admin(), Account::user2(), 5);
-        assert(dispatcher.balance_of(Account::user2()) == 5, Errors::INVALID_BALANCE);
-        // dispatcher.transfer_from(Account::admin(), user1, 15);
-        // assert(dispatcher.balance_of(user1) == 5, Errors::INVALID_BALANCE);
         stop_prank(CheatTarget::One(contract_address));
     }
 
@@ -435,7 +417,7 @@ mod test {
         dispatcher.approve(Account::user1(), 50);
         assert(
             dispatcher.allowance(Account::admin(), Account::user1()) == 50,
-            Errors::INVALID_ALLOWANCE_GIVEN
+            Errors::NOT_ALLOWED
         );
     }
 
@@ -448,7 +430,7 @@ mod test {
         dispatcher.approve(Account::user1(), 30);
         assert(
             dispatcher.allowance(Account::admin(), Account::user1()) == 30,
-            Errors::INVALID_ALLOWANCE_GIVEN
+            Errors::NOT_ALLOWED
         );
 
         dispatcher.increase_allowance(Account::user1(), 20);
@@ -468,7 +450,7 @@ mod test {
         dispatcher.approve(Account::user1(), 30);
         assert(
             dispatcher.allowance(Account::admin(), Account::user1()) == 30,
-            Errors::INVALID_ALLOWANCE_GIVEN
+            Errors::NOT_ALLOWED
         );
 
         dispatcher.decrease_allowance(Account::user1(), 5);
@@ -484,26 +466,10 @@ mod test {
         const INVALID_DECIMALS: felt252 = 'Invalid decimals!';
         const UNMATCHED_SUPPLY: felt252 = 'Unmatched supply!';
         const INVALID_BALANCE: felt252 = 'Invalid balance!';
-        const INVALID_ALLOWANCE_GIVEN: felt252 = 'Invalid allowance given';
+        const NOT_ALLOWED: felt252 = 'Invalid allowance given';
         const FUNDS_NOT_SENT: felt252 = 'Funds not sent!';
         const FUNDS_NOT_RECIEVED: felt252 = 'Funds not recieved!';
         const ERROR_INCREASING_ALLOWANCE: felt252 = 'Allowance not increased';
         const ERROR_DECREASING_ALLOWANCE: felt252 = 'Allowance not decreased';
-    }
-    mod Account {
-        use core::option::OptionTrait;
-        use starknet::ContractAddress;
-        use core::traits::TryInto;
-
-        fn user1() -> ContractAddress {
-            'joy'.try_into().unwrap()
-        }
-
-        fn user2() -> ContractAddress {
-            'caleb'.try_into().unwrap()
-        }
-        fn admin() -> ContractAddress {
-            'admin'.try_into().unwrap()
-        }
     }
 }
