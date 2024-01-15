@@ -2,7 +2,7 @@
 version = 1
 
 [[package]]
-name = "class_character"
+name = "blockheader_cairo_bootcamp"
 version = "0.1.0"
 dependencies = [
  "snforge_std",

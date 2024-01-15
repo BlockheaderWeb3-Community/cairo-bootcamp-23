@@ -373,10 +373,7 @@ mod test {
         dispatcher.approve(Account::user1(), 20);
         stop_prank(CheatTarget::One(contract_address));
 
-        assert(
-            dispatcher.allowance(Account::admin(), Account::user1()) == 20,
-            Errors::NOT_ALLOWED
-        );
+        assert(dispatcher.allowance(Account::admin(), Account::user1()) == 20, Errors::NOT_ALLOWED);
 
         start_prank(CheatTarget::One(contract_address), Account::user1());
         dispatcher.transfer_from(Account::admin(), Account::user2(), 10);
@@ -415,10 +412,7 @@ mod test {
 
         start_prank(CheatTarget::One(contract_address), Account::admin());
         dispatcher.approve(Account::user1(), 50);
-        assert(
-            dispatcher.allowance(Account::admin(), Account::user1()) == 50,
-            Errors::NOT_ALLOWED
-        );
+        assert(dispatcher.allowance(Account::admin(), Account::user1()) == 50, Errors::NOT_ALLOWED);
     }
 
     #[test]
@@ -428,10 +422,7 @@ mod test {
 
         start_prank(CheatTarget::One(contract_address), Account::admin());
         dispatcher.approve(Account::user1(), 30);
-        assert(
-            dispatcher.allowance(Account::admin(), Account::user1()) == 30,
-            Errors::NOT_ALLOWED
-        );
+        assert(dispatcher.allowance(Account::admin(), Account::user1()) == 30, Errors::NOT_ALLOWED);
 
         dispatcher.increase_allowance(Account::user1(), 20);
 
@@ -448,10 +439,7 @@ mod test {
 
         start_prank(CheatTarget::One(contract_address), Account::admin());
         dispatcher.approve(Account::user1(), 30);
-        assert(
-            dispatcher.allowance(Account::admin(), Account::user1()) == 30,
-            Errors::NOT_ALLOWED
-        );
+        assert(dispatcher.allowance(Account::admin(), Account::user1()) == 30, Errors::NOT_ALLOWED);
 
         dispatcher.decrease_allowance(Account::user1(), 5);
 
